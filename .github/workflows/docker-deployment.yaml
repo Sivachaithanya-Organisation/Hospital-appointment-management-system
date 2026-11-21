@@ -22,7 +22,7 @@ jobs:
         id: ecr
         uses: aws-actions/amazon-ecr-login@v2
       
-      - name: Build and push
+      - name: Build and push backend image
         uses: docker/build-push-action@v6
         with:
           context: ./backend
@@ -30,10 +30,34 @@ jobs:
           push: true
           tags: ${{ steps.ecr.outputs.registry }}/mounika-ecr-backend:${{ github.sha }}
 
-      - name: Build and push
+      - name: Build and push frontend image
         uses: docker/build-push-action@v6
         with:
           context: ./frontend
           file: ./frontend/Dockerfile
           push: true
           tags: ${{ steps.ecr.outputs.registry }}/mounika-ecr-frontend:${{ github.sha }}
+  
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: aws-actions/configure-aws-credentials@v6.3.0
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-west-2
+      
+      - name: Execute remote SSH commands using password
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.HOST }}
+          username: ubuntu
+          port: 22
+          key: ${{ secrets.KEY }}
+          script: |
+            aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin 517293881035.dkr.ecr.us-west-2.amazonaws.com
+            docker pull 517293881035.dkr.ecr.us-west-2.amazonaws.com/mounika-ecr-frontend:${{ github.sha }}
+            docker pull 517293881035.dkr.ecr.us-west-2.amazonaws.com/mounika-ecr-backend:${{ github.sha }}
+            docker run -d --name backend -p 8000:8000 hospital-backend
+            docker run -d --name frontend -p 3000:80 hospital-frontend
