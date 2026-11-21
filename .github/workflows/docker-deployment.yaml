@@ -60,5 +60,5 @@ jobs:
             docker pull 517293881035.dkr.ecr.us-west-2.amazonaws.com/mounika-ecr-frontend:${{ github.sha }}
             docker pull 517293881035.dkr.ecr.us-west-2.amazonaws.com/mounika-ecr-backend:${{ github.sha }}
             docker rm -f backend frontend
-            docker run -d --name backend -p 8000:8000 517293881035.dkr.ecr.us-west-2.amazonaws.com/mounika-ecr-backend:${{ github.sha }}
-            docker run -d --name frontend -p 3000:80 517293881035.dkr.ecr.us-west-2.amazonaws.com/mounika-ecr-frontend:${{ github.sha }}
+            docker run -d --name backend --network hospital-net -p 8000:8000 517293881035.dkr.ecr.us-west-2.amazonaws.com/mounika-ecr-backend:${{ github.sha }}
+            docker run -d --name frontend --network hospital-net -p 3000:80 517293881035.dkr.ecr.us-west-2.amazonaws.com/mounika-ecr-frontend:${{ github.sha }}
