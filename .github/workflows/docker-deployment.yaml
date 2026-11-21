@@ -22,20 +22,16 @@ jobs:
         id: ecr
         uses: aws-actions/amazon-ecr-login@v2
       
-      - name: get inside the backend
-        run: cd backend
-
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
+          file: ./backend/Dockerfile
           push: true
           tags: ${{ steps.ecr.outputs.registry }}/mounika-backend:${{ github.sha }}
 
-      - name: get inside the backend
-        run: cd ../frontend
-
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
+          file: ./frontend/Dockerfile
           push: true
           tags: ${{ steps.ecr.outputs.registry }}/mounika-frontend:${{ github.sha }}
