@@ -28,7 +28,7 @@ jobs:
           context: ./backend
           file: ./backend/Dockerfile
           push: true
-          tags: ${{ steps.ecr.outputs.registry }}/mounika-backend:${{ github.sha }}
+          tags: ${{ steps.ecr.outputs.registry }}/mounika-ecr-backend:${{ github.sha }}
 
       - name: Build and push
         uses: docker/build-push-action@v6
@@ -36,4 +36,4 @@ jobs:
           context: ./frontend
           file: ./frontend/Dockerfile
           push: true
-          tags: ${{ steps.ecr.outputs.registry }}/mounika-frontend:${{ github.sha }}
+          tags: ${{ steps.ecr.outputs.registry }}/mounika-ecr-frontend:${{ github.sha }}
